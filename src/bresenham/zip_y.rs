@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Formatter};
 use line_drawing::{Bresenham, Point, SignedNum};
+use crate::bresenham::error::Error;
 
-//#[derive(Debug)]
 pub struct BresenhamZipY<T> {
 	left: Bresenham<T>,
 	right: Bresenham<T>,
@@ -10,18 +10,21 @@ pub struct BresenhamZipY<T> {
 	goal: T
 }
 
-impl<T: SignedNum> BresenhamZipY<T> {
+impl<T: SignedNum + Debug> BresenhamZipY<T> {
 
 	#[inline]
-	pub fn new(start: Point<T>, end_left: Point<T>, end_right: Point<T>) -> Self {
-		// TODO check ending points -> throw error if they don't share the same Y
-		Self {
+	pub fn new(start: Point<T>, end_left: Point<T>, end_right: Point<T>) -> Result<Self, Error<T>> {
+		if end_left.1 != end_right.1 {
+			return Err(Error::InvalidY(end_left.1, end_right.1))
+		}
+
+		Ok(Self {
 			left: Bresenham::new(start, end_left),
 			right: Bresenham::new(start, end_right),
 			prev_left: start,
 			prev_right: start,
 			goal: end_left.1
-		}
+		})
 	}
 
 }
@@ -71,6 +74,13 @@ impl<T: SignedNum + Debug> Debug for BresenhamZipY<T> {
 #[cfg(test)]
 mod tests {
 	use crate::bresenham::BresenhamZipY;
+	use crate::bresenham::error::Error;
+
+	#[test]
+	fn invalid_y() {
+		let result = BresenhamZipY::new((0,0), (1,1), (2,2));
+		assert_eq!(result.unwrap_err(), Error::InvalidY(1,2));
+	}
 
 	#[test]
 	fn symmetric() {
@@ -78,7 +88,7 @@ mod tests {
 		let mut expected_right_x = 50;
 		let mut expected_y = 50;
 
-		for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (100, 100)) {
+		for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (100, 100)).unwrap() {
 			assert_eq!(expected_left_x, left.0);
 			assert_eq!(expected_right_x, right.0);
 			assert_eq!(expected_y, left.1);
@@ -96,7 +106,7 @@ mod tests {
 		let mut expected_right_x = 50;
 		let mut expected_y = 50;
 
-		for (left, right) in BresenhamZipY::new((50, 50), (0, 400), (800, 400)) {
+		for (left, right) in BresenhamZipY::new((50, 50), (0, 400), (800, 400)).unwrap() {
 			assert!(left.0 <= expected_left_x);
 			assert!(right.0 >= expected_left_x);
 			assert_eq!(expected_y, left.1);
