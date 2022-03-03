@@ -1,6 +1,7 @@
 use std::fmt::{Debug, Formatter};
-use line_drawing::{Bresenham, Point, SignedNum};
+use line_drawing::{Bresenham, Point};
 use crate::bresenham::error::Error;
+use crate::SignedNum;
 
 pub struct BresenhamZipY<T> {
 	left: Bresenham<T>,
@@ -10,7 +11,7 @@ pub struct BresenhamZipY<T> {
 	goal: T
 }
 
-impl<T: SignedNum + Debug> BresenhamZipY<T> {
+impl<T: SignedNum> BresenhamZipY<T> {
 
 	#[inline]
 	pub fn new(start: Point<T>, end_left: Point<T>, end_right: Point<T>) -> Result<Self, Error<T>> {
@@ -29,7 +30,7 @@ impl<T: SignedNum + Debug> BresenhamZipY<T> {
 
 }
 
-impl<T: SignedNum + Debug> Iterator for BresenhamZipY<T> {
+impl<T: SignedNum> Iterator for BresenhamZipY<T> {
 	type Item = (Point<T>, Point<T>);
 
 	fn next(&mut self) -> Option<Self::Item> {
@@ -62,7 +63,7 @@ impl<T: SignedNum + Debug> Iterator for BresenhamZipY<T> {
 	}
 }
 
-impl<T: SignedNum + Debug> Debug for BresenhamZipY<T> {
+impl<T: SignedNum> Debug for BresenhamZipY<T> {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
 		write!(f, "BresenhamZip [
 		previous_left_point: ({:?}, {:?}),
@@ -108,7 +109,7 @@ mod tests {
 
 		for (left, right) in BresenhamZipY::new((50, 50), (0, 400), (800, 400)).unwrap() {
 			assert!(left.0 <= expected_left_x);
-			assert!(right.0 >= expected_left_x);
+			assert!(right.0 >= expected_right_x);
 			assert_eq!(expected_y, left.1);
 			assert_eq!(left.1, right.1);
 
