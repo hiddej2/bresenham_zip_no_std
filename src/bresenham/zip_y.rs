@@ -1,11 +1,13 @@
 use std::fmt::{Debug, Formatter};
-use line_drawing::{Bresenham, SignedNum};
-use crate::Point;
+use line_drawing::{Bresenham, Point, SignedNum};
 
 //#[derive(Debug)]
 pub struct BresenhamZipY<T> {
 	left: Bresenham<T>,
-	right: Bresenham<T>
+	right: Bresenham<T>,
+	prev_left: Point<T>,
+	prev_right: Point<T>,
+	goal: T
 }
 
 impl<T: SignedNum> BresenhamZipY<T> {
@@ -15,14 +17,95 @@ impl<T: SignedNum> BresenhamZipY<T> {
 		// TODO check ending points -> throw error if they don't share the same Y
 		Self {
 			left: Bresenham::new(start, end_left),
-			right: Bresenham::new(start, end_right)
+			right: Bresenham::new(start, end_right),
+			prev_left: start,
+			prev_right: start,
+			goal: end_left.1
 		}
 	}
 
 }
 
-impl<T> Debug for BresenhamZipY<T> {
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(f, "BresenhamZip")
+impl<T: SignedNum + Debug> Iterator for BresenhamZipY<T> {
+	type Item = (Point<T>, Point<T>);
+
+	fn next(&mut self) -> Option<Self::Item> {
+		let mut left = None;
+		while let Some(point) = self.left.next() {
+			if (point.1 - self.prev_left.1).abs() > T::zero() {
+				left = Some(self.prev_left);
+				self.prev_left = point;
+				break;
+			}
+			self.prev_left = point;
+		}
+
+		let mut right = None;
+		while let Some(point) = self.right.next() {
+			if (point.1 - self.prev_right.1).abs() > T::zero() {
+				right = Some(self.prev_right);
+				self.prev_right = point;
+				break;
+			}
+			self.prev_right = point;
+		}
+
+		if left.is_some() && right.is_some() {
+			Some((left.unwrap(), right.unwrap()))
+		} else if self.prev_left.1 == self.goal {
+				self.goal -= T::one();
+				Some((self.prev_left, self.prev_right))
+		} else { None }
 	}
+}
+
+impl<T: SignedNum + Debug> Debug for BresenhamZipY<T> {
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		write!(f, "BresenhamZip [
+		previous_left_point: ({:?}, {:?}),
+		previous_right_point: ({:?}, {:?})
+		]", self.prev_left.0, self.prev_left.1, self.prev_right.0, self.prev_right.1)
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use crate::bresenham::BresenhamZipY;
+
+	#[test]
+	fn symmetric() {
+		let mut expected_left_x = 50;
+		let mut expected_right_x = 50;
+		let mut expected_y = 50;
+
+		for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (100, 100)) {
+			assert_eq!(expected_left_x, left.0);
+			assert_eq!(expected_right_x, right.0);
+			assert_eq!(expected_y, left.1);
+			assert_eq!(left.1, right.1);
+
+			expected_left_x -= 1;
+			expected_right_x += 1;
+			expected_y += 1;
+		}
+	}
+
+	#[test]
+	fn asymmetric() {
+		let mut expected_left_x = 50;
+		let mut expected_right_x = 50;
+		let mut expected_y = 50;
+
+		for (left, right) in BresenhamZipY::new((50, 50), (0, 400), (800, 400)) {
+			assert!(left.0 <= expected_left_x);
+			assert!(right.0 >= expected_left_x);
+			assert_eq!(expected_y, left.1);
+			assert_eq!(left.1, right.1);
+
+			expected_left_x = left.0;
+			expected_right_x = right.0;
+			expected_y += 1;
+		}
+	}
+
 }
