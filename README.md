@@ -28,11 +28,9 @@ for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (250, 100))? {
 }
 ```
 
-## TODO
+## Incoming
 
-- Move example
-- Upload crate
-- Create BresenhamX (v0.2)
+* BresenhamZipX to generate the pairs with steps along the X axis
 
 ## License
 
