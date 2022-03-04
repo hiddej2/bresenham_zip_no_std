@@ -3,6 +3,22 @@ use line_drawing::{Bresenham, Point};
 use crate::bresenham::error::Error;
 use crate::SignedNum;
 
+/// Iterator to generate the lines along the Y axis. Each iteration will yield two points with the
+/// same height.
+///
+/// # Example
+/// ```
+/// # use std::error::Error;
+/// # use bresenham_zip::bresenham::BresenhamZipY;
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (250, 100))? {
+///   println!("{:?} - {:?}", left, right);
+///   assert_eq!(left.1, right.1);
+///   assert!((0..=50).contains(&left.0));
+///   assert!((50..=250).contains(&right.0));
+/// }
+/// #   Ok(())
+/// # }
 pub struct BresenhamZipY<T> {
 	left: Bresenham<T>,
 	right: Bresenham<T>,
@@ -13,6 +29,18 @@ pub struct BresenhamZipY<T> {
 
 impl<T: SignedNum> BresenhamZipY<T> {
 
+	/// Builds the iterator to generate the lines advancing through the Y axis. It needs three points,
+	/// two of them with the same Y value.
+	///
+	/// # Arguments
+	/// * `start` - Starting point, it's the point with the divergent Y.
+	/// * `end_left`- One of the points sharing the Y (it doesn't need to be at the left necessarily)
+	/// * `end_right`- The other point sharing the Y (it doesn't need to be at the right necessarily)
+	///
+	/// # Errors
+	/// If the `end_left` and `end_right` points don't share the same Y the build will be invalid and
+	/// the result will be an error
+	///
 	#[inline]
 	pub fn new(start: Point<T>, end_left: Point<T>, end_right: Point<T>) -> Result<Self, Error<T>> {
 		if end_left.1 != end_right.1 {
@@ -33,6 +61,7 @@ impl<T: SignedNum> BresenhamZipY<T> {
 impl<T: SignedNum> Iterator for BresenhamZipY<T> {
 	type Item = (Point<T>, Point<T>);
 
+	#[allow(clippy::while_let_on_iterator)]  // need to be like that to keep using the iterator
 	fn next(&mut self) -> Option<Self::Item> {
 		let mut left = None;
 		while let Some(point) = self.left.next() {
@@ -54,8 +83,8 @@ impl<T: SignedNum> Iterator for BresenhamZipY<T> {
 			self.prev_right = point;
 		}
 
-		if left.is_some() && right.is_some() {
-			Some((left.unwrap(), right.unwrap()))
+		if let Some(left_point) = left {
+			Some((left_point, right.unwrap()))
 		} else if self.prev_left.1 == self.goal {
 				self.goal -= T::one();
 				Some((self.prev_left, self.prev_right))
@@ -116,6 +145,24 @@ mod tests {
 			expected_left_x = left.0;
 			expected_right_x = right.0;
 			expected_y += 1;
+		}
+	}
+
+	#[test]
+	fn inverted() {
+		let mut expected_left_x = 50;
+		let mut expected_right_x = 50;
+		let mut expected_y = 50;
+
+		for (left, right) in BresenhamZipY::new((50, 50), (0, 0), (100, 0)).unwrap() {
+			assert_eq!(expected_left_x, left.0);
+			assert_eq!(expected_right_x, right.0);
+			assert_eq!(expected_y, left.1);
+			assert_eq!(left.1, right.1);
+
+			expected_y -= 1;
+			expected_left_x -= 1;
+			expected_right_x += 1;
 		}
 	}
 

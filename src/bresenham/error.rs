@@ -1,10 +1,15 @@
+//! Library errors
+
 use std::error::Error as StdError;
 use std::fmt::{Debug, Display, Formatter};
 use crate::SignedNum;
 
+/// Different errors that can happen using the library
 #[derive(PartialEq)]
 pub enum Error<T> {
+	/// The last two points passed to build the BresenhamZip for X axis doesn't share the same X
 	InvalidX(T,T),
+	/// The last two points passed to build the BresenhamZip for Y axis doesn't share the same Y
 	InvalidY(T,T),
 }
 

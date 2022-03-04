@@ -14,11 +14,23 @@ horizontal or vertical line conforming the triangle.
 This crate was born during the development of [FerruX Canvas](https://crates.io/crates/ferrux_canvas) to manage the
 generation of the points for the triangle filling function.
 
+## Usage
+
+Build the BresenhamZip specifying the three points of the triangle. 
+The last two of them must share the same value for X or Y depending on which BresenhamZip you're using.
+
+Each iteration will yield a pair of points defining the start and end of an horizontal or vertical line inside the triangle.
+
+```rust
+/// Rasterizes a triangle with an horizontal base
+for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (250, 100))? {
+  draw_line(left, right); // draw_line is a figurative method, use one of your project
+}
+```
+
 ## TODO
 
-- Add documentation
 - Move example
-- Update README
 - Upload crate
 - Create BresenhamX (v0.2)
 
