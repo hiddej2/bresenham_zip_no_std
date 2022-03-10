@@ -17,7 +17,7 @@ impl<T: SignedNum> Error<T> {
 
 	fn message(&self) -> String {
 		match self {
-			Error::InvalidX(left, right) => format!("Invalid Y. Both values must have the same Y ({left:?} != {right:?})"),
+			Error::InvalidX(left, right) => format!("Invalid X. Both values must have the same X ({left:?} != {right:?})"),
 			Error::InvalidY(left, right) => format!("Invalid Y. Both values must have the same Y ({left:?} != {right:?})"),
 		}
 	}

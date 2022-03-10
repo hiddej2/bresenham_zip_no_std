@@ -94,7 +94,7 @@ impl<T: SignedNum> Iterator for BresenhamZipY<T> {
 
 impl<T: SignedNum> Debug for BresenhamZipY<T> {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(f, "BresenhamZip [
+		write!(f, "BresenhamZipY [
 		previous_left_point: ({:?}, {:?}),
 		previous_right_point: ({:?}, {:?})
 		]", self.prev_left.0, self.prev_left.1, self.prev_right.0, self.prev_right.1)

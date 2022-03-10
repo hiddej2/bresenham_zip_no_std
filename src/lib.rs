@@ -1,5 +1,5 @@
-//! To use Bresenham.Zip you need to build a Bresenham object (right now only Y axis is implemented)
-//! specifying the three points of the triangle. This rasterization algorithm only works using
+//! To use Bresenham.Zip you need to build a Bresenham object of the axis you want to travel.
+//! You must specify the three points of the triangle. This rasterization algorithm only works using
 //! triangles were two of its points have the same X or Y.
 //!
 //! To build the object use the constructor passing first the point out of the horizontal line and

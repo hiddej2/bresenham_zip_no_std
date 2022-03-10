@@ -28,10 +28,6 @@ for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (250, 100))? {
 }
 ```
 
-## Incoming
-
-* BresenhamZipX to generate the pairs with steps along the X axis
-
 ## License
 
 Licensed, at your option, under either of:
