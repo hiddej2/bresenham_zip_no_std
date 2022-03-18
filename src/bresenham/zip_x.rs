@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Formatter};
-use line_drawing::{Bresenham, Point};
+use line_drawing::Bresenham;
 use crate::bresenham::error::Error;
-use crate::SignedNum;
+use crate::{Point2, SignedNum};
 
 /// Iterator to generate the lines along the X axis. Each iteration will yield two points with the
 /// same width.
@@ -11,7 +11,7 @@ use crate::SignedNum;
 /// # use std::error::Error;
 /// # use bresenham_zip::bresenham::BresenhamZipX;
 /// # fn main() -> Result<(), Box<dyn Error>> {
-/// for (top, bottom) in BresenhamZipX::new((50, 50), (0, 100), (250, 100))? {
+/// for (top, bottom) in BresenhamZipX::new((50, 50), (100, 0), (100, 250))? {
 ///   println!("{:?} - {:?}", top, bottom);
 ///   assert_eq!(top.0, bottom.0);
 ///   assert!((0..=50).contains(&top.1));
@@ -22,8 +22,8 @@ use crate::SignedNum;
 pub struct BresenhamZipX<T> {
 	top: Bresenham<T>,
 	bottom: Bresenham<T>,
-	prev_top: Point<T>,
-	prev_bottom: Point<T>,
+	prev_top: Point2<T>,
+	prev_bottom: Point2<T>,
 	goal: T
 }
 
@@ -42,7 +42,7 @@ impl<T: SignedNum> BresenhamZipX<T> {
 	/// the result will be an error
 	///
 	#[inline]
-	pub fn new(start: Point<T>, end_top: Point<T>, end_bottom: Point<T>) -> Result<Self, Error<T>> {
+	pub fn new(start: Point2<T>, end_top: Point2<T>, end_bottom: Point2<T>) -> Result<Self, Error<T>> {
 		if end_top.0 != end_bottom.0 {
 			return Err(Error::InvalidX(end_top.0, end_bottom.0))
 		}
@@ -59,7 +59,7 @@ impl<T: SignedNum> BresenhamZipX<T> {
 }
 
 impl<T: SignedNum> Iterator for BresenhamZipX<T> {
-	type Item = (Point<T>, Point<T>);
+	type Item = (Point2<T>, Point2<T>);
 
 	#[allow(clippy::while_let_on_iterator)]  // needs to be like that to keep using the iterator
 	fn next(&mut self) -> Option<Self::Item> {

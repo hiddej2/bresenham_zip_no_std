@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Formatter};
-use line_drawing::{Bresenham, Point};
+use line_drawing::Bresenham;
 use crate::bresenham::error::Error;
-use crate::SignedNum;
+use crate::{Point2, SignedNum};
 
 /// Iterator to generate the lines along the Y axis. Each iteration will yield two points with the
 /// same height.
@@ -22,8 +22,8 @@ use crate::SignedNum;
 pub struct BresenhamZipY<T> {
 	left: Bresenham<T>,
 	right: Bresenham<T>,
-	prev_left: Point<T>,
-	prev_right: Point<T>,
+	prev_left: Point2<T>,
+	prev_right: Point2<T>,
 	goal: T
 }
 
@@ -42,7 +42,7 @@ impl<T: SignedNum> BresenhamZipY<T> {
 	/// the result will be an error
 	///
 	#[inline]
-	pub fn new(start: Point<T>, end_left: Point<T>, end_right: Point<T>) -> Result<Self, Error<T>> {
+	pub fn new(start: Point2<T>, end_left: Point2<T>, end_right: Point2<T>) -> Result<Self, Error<T>> {
 		if end_left.1 != end_right.1 {
 			return Err(Error::InvalidY(end_left.1, end_right.1))
 		}
@@ -59,7 +59,7 @@ impl<T: SignedNum> BresenhamZipY<T> {
 }
 
 impl<T: SignedNum> Iterator for BresenhamZipY<T> {
-	type Item = (Point<T>, Point<T>);
+	type Item = (Point2<T>, Point2<T>);
 
 	#[allow(clippy::while_let_on_iterator)]  // need to be like that to keep using the iterator
 	fn next(&mut self) -> Option<Self::Item> {

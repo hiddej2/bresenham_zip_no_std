@@ -32,3 +32,9 @@ pub mod bresenham;
 /// Extension of [line_drawing::SignedNum] to allow the use of [std::fmt::Debug].
 pub trait SignedNum: line_drawing::SignedNum + std::fmt::Debug {}
 impl<T: line_drawing::SignedNum + std::fmt::Debug> SignedNum for T {}
+
+/// A point in 2D space
+pub type Point2<T> = (T, T);
+
+/// A point in 3D space
+pub type Point3<T> = (T, T, T);
