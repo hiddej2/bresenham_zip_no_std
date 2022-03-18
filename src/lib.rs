@@ -13,7 +13,7 @@
 //! # Example
 //! ```
 //! # use std::error::Error;
-//! # use bresenham_zip::bresenham::BresenhamZipY;
+//! # use bresenham_zip::bresenham2::BresenhamZipY;
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (250, 100))? {
 //!   println!("{:?} - {:?}", left, right);
@@ -26,7 +26,7 @@
 //!
 //! ```
 //!
-pub mod bresenham;
+pub mod bresenham2;
 
 /// Trait to represent any valid number to use with the **BresenhamZip**.
 /// Extension of [line_drawing::SignedNum] to allow the use of [std::fmt::Debug].

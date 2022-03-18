@@ -1,6 +1,6 @@
 use std::fmt::{Debug, Formatter};
 use line_drawing::Bresenham;
-use crate::bresenham::error::Error;
+use crate::bresenham2::error::Error;
 use crate::{Point2, SignedNum};
 
 /// Iterator to generate the lines along the Y axis. Each iteration will yield two points with the
@@ -9,7 +9,7 @@ use crate::{Point2, SignedNum};
 /// # Example
 /// ```
 /// # use std::error::Error;
-/// # use bresenham_zip::bresenham::BresenhamZipY;
+/// # use bresenham_zip::bresenham2::BresenhamZipY;
 /// # fn main() -> Result<(), Box<dyn Error>> {
 /// for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (250, 100))? {
 ///   println!("{:?} - {:?}", left, right);
@@ -103,8 +103,8 @@ impl<T: SignedNum> Debug for BresenhamZipY<T> {
 
 #[cfg(test)]
 mod tests {
-	use crate::bresenham::BresenhamZipY;
-	use crate::bresenham::error::Error;
+	use crate::bresenham2::BresenhamZipY;
+	use crate::bresenham2::error::Error;
 
 	#[test]
 	fn invalid_y() {

@@ -1,5 +1,5 @@
 use std::error::Error;
-use bresenham_zip::bresenham::{BresenhamZipX, BresenhamZipY};
+use bresenham_zip::bresenham2::{BresenhamZipX, BresenhamZipY};
 
 fn main() -> Result<(), Box<dyn Error>> {
 	println!("Pairs along the Y axis in 2D space: ");
