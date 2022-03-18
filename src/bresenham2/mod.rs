@@ -1,4 +1,4 @@
-//! Module with the BresenhamZips and library logic
+//! Module with the 2D BresenhamZips
 pub use zip_x::BresenhamZipX;
 pub use zip_y::BresenhamZipY;
 

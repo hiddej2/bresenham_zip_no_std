@@ -27,6 +27,7 @@
 //! ```
 //!
 pub mod bresenham2;
+pub mod bresenham3;
 mod error;
 
 /// Trait to represent any valid number to use with the **BresenhamZip**.
