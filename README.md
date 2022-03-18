@@ -17,14 +17,21 @@ generation of the points for the triangle filling function.
 ## Usage
 
 Build the BresenhamZip specifying the three points of the triangle. 
-The last two of them must share the same value for X or Y depending on which BresenhamZip you're using.
+The last two of them must share the same value for X, Y or Z depending on which BresenhamZip you're using.
 
 Each iteration will yield a pair of points defining the start and end of an horizontal or vertical line inside the triangle.
 
 ```rust
-/// Rasterizes a triangle with an horizontal base
+/// Rasterizes a 2D triangle with an horizontal base
 for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (250, 100))? {
   draw_line(left, right); // draw_line is a figurative method, use one of your project
+}
+```
+
+```rust
+/// Rasterizes a 3D triangle
+for (top, bottom) in Bresenham3ZipY::new((50, 50, 50), (0, 100, 75), (250, 100, 120))? {
+  draw_line(top, bottom); // draw_line is a figurative method, use one of your project
 }
 ```
 

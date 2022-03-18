@@ -26,6 +26,22 @@
 //!
 //! ```
 //!
+//! ```
+//! # use std::error::Error;
+//! # use bresenham_zip::bresenham3::Bresenham3ZipX;
+//! # fn main() -> Result<(), Box<dyn Error>> {
+//! for (top, bottom) in Bresenham3ZipX::new((50, 50, 50), (100, 0, 10), (100, 250, 200))? {
+//!   println!("{:?} - {:?}", top, bottom);
+//!   assert_eq!(top.0, bottom.0);
+//!   assert!((0..=50).contains(&top.1));
+//!   assert!((10..=50).contains(&top.2));
+//!   assert!((50..=250).contains(&bottom.1));
+//!   assert!((50..=200).contains(&bottom.2));
+//! }
+//! #   Ok(())
+//! # }
+//! ```
+//!
 pub mod bresenham2;
 pub mod bresenham3;
 mod error;

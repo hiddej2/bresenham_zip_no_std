@@ -21,6 +21,7 @@ use crate::{Point3, SignedNum};
 /// }
 /// #   Ok(())
 /// # }
+/// ```
 pub struct Bresenham3ZipX<T> {
 	top: Bresenham3d<T>,
 	bottom: Bresenham3d<T>,
