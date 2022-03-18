@@ -1,9 +1,9 @@
 //! To use Bresenham.Zip you need to build a Bresenham object of the axis you want to travel.
 //! You must specify the three points of the triangle. This rasterization algorithm only works using
-//! triangles were two of its points have the same X or Y.
+//! triangles were two of its points have the same X, Y or Z.
 //!
 //! To build the object use the constructor passing first the point out of the horizontal line and
-//! then the other two points. If the last two points doesn't belong to the same X or Y axis, an
+//! then the other two points. If the last two points doesn't belong to the same axis, an
 //! error will be returned instead of the iterator.
 //!
 //! Once the iterator is ready you can use it like any other iterator and it will provide two points
@@ -27,6 +27,7 @@
 //! ```
 //!
 pub mod bresenham2;
+mod error;
 
 /// Trait to represent any valid number to use with the **BresenhamZip**.
 /// Extension of [line_drawing::SignedNum] to allow the use of [std::fmt::Debug].

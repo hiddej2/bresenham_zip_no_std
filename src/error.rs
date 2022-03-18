@@ -11,6 +11,8 @@ pub enum Error<T> {
 	InvalidX(T,T),
 	/// The last two points passed to build the BresenhamZip for Y axis doesn't share the same Y
 	InvalidY(T,T),
+	/// The last two points passed to build the BresenhamZip for Z axis doesn't share the same Z
+	InvalidZ(T,T),
 }
 
 impl<T: SignedNum> Error<T> {
@@ -19,6 +21,7 @@ impl<T: SignedNum> Error<T> {
 		match self {
 			Error::InvalidX(left, right) => format!("Invalid X. Both values must have the same X ({left:?} != {right:?})"),
 			Error::InvalidY(left, right) => format!("Invalid Y. Both values must have the same Y ({left:?} != {right:?})"),
+			Error::InvalidZ(left, right) => format!("Invalid Z. Both values must have the same Y ({left:?} != {right:?})"),
 		}
 	}
 
