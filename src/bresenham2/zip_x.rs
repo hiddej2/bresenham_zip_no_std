@@ -34,8 +34,8 @@ impl<T: SignedNum> BresenhamZipX<T> {
 	///
 	/// # Arguments
 	/// * `start` - Starting point, it's the point with the divergent X.
-	/// * `end_top`- One of the points sharing the Y (it doesn't need to be at the top necessarily)
-	/// * `end_bottom`- The other point sharing the Y (it doesn't need to be at the bottom necessarily)
+	/// * `end_top`- One of the points sharing the X (it doesn't need to be at the top necessarily)
+	/// * `end_bottom`- The other point sharing the X (it doesn't need to be at the bottom necessarily)
 	///
 	/// # Errors
 	/// If the `end_top` and `end_bottom` points don't share the same X the build will be invalid and
