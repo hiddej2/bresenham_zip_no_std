@@ -27,10 +27,6 @@ impl<T: SignedNum> Bresenham3dZip<T> {
 
 	#[inline]
 	pub fn new(start: Point3<T>, end1: Point3<T>, end2: Point3<T>, axis: u8) -> Result<Self, Error<T>> {
-		if nth!(end1, axis) != nth!(end2, axis) {
-			return Err(Error::InvalidX(nth!(end1, axis), nth!(end2, axis)))
-		}
-
 		Ok(Self {
 			a: Bresenham3d::new(start, end1),
 			b: Bresenham3d::new(start, end2),
@@ -94,75 +90,140 @@ impl<T: SignedNum> Debug for Bresenham3dZip<T> {
 #[cfg(test)]
 mod tests {
 	use super::Bresenham3dZip;
-	use crate::error::Error;
 
-	#[test]
-	fn invalid_x() {
-		let result = Bresenham3dZip::new((0, 0, 0), (1, 1, 1), (2, 2, 2), 0);
-		assert_eq!(result.unwrap_err(), Error::InvalidX(1, 2));
+	macro_rules! symmetric {
+	    ($a:tt, $b: tt, $c: tt, $axis: tt, $axis1: tt, $axis2: tt) => {
+				let mut for_a = 50;
+				let mut for_b = 50;
+				let mut matching = 50;
+
+				for (a, b) in Bresenham3dZip::new($a, $b, $c, $axis).unwrap() {
+			    assert_eq!(for_a, a.$axis1);
+			    assert_eq!(for_a, a.$axis2);
+			    assert_eq!(for_b, b.$axis1);
+			    assert_eq!(for_b, b.$axis2);
+					assert_eq!(matching, a.$axis);
+					assert_eq!(matching, b.$axis);
+
+					for_a -= 1;
+					for_b += 1;
+					matching += 1;
+				}
+	    };
 	}
 
-	#[test]
-	fn symmetric() {
-		let mut expected_top_y_z = 50;
-		let mut expected_bottom_y_z = 50;
-		let mut expected_x = 50;
+	macro_rules! asymmetric {
+	    ($a: tt, $b: tt, $c: tt, $axis: tt, $axis1: tt, $axis2: tt) => {
+				let mut for_a_1 = 50;
+				let mut for_a_2 = 50;
+				let mut for_b_1 = 50;
+				let mut for_b_2 = 50;
+				let mut matching = 50;
 
-		for (top, bottom) in Bresenham3dZip::new((50, 50, 50), (100, 0, 0), (100, 100, 100), 0).unwrap() {
-			assert_eq!(expected_top_y_z, top.1);
-			assert_eq!(expected_top_y_z, top.2);
-			assert_eq!(expected_bottom_y_z, bottom.1);
-			assert_eq!(expected_bottom_y_z, bottom.2);
-			assert_eq!(expected_x, top.0);
-			assert_eq!(top.0, bottom.0);
+				for (a, b) in Bresenham3dZip::new($a, $b, $c, $axis).unwrap() {
+					assert!(a.$axis1 <= for_a_1);
+					assert!(a.$axis2 <= for_a_2);
+					assert!(b.$axis1 >= for_b_1);
+					assert!(b.$axis2 >= for_b_2);
+					assert_eq!(matching, a.$axis);
+					assert_eq!(a.$axis, b.$axis);
 
-			expected_top_y_z -= 1;
-			expected_bottom_y_z += 1;
-			expected_x += 1;
+					for_a_1 = a.$axis1;
+					for_a_2 = a.$axis2;
+					for_b_1 = b.$axis1;
+					for_b_2 = b.$axis2;
+					matching += 1;
+				}
+	    };
+	}
+
+	macro_rules! inverted {
+	    ($a:tt, $b: tt, $c: tt, $axis: tt, $axis1: tt, $axis2: tt) => {
+		    let mut for_a = 50;
+				let mut for_b = 50;
+				let mut matching = 50;
+
+				for (a, b) in Bresenham3dZip::new($a, $b, $c, $axis).unwrap() {
+					assert_eq!(for_a, a.$axis1);
+					assert_eq!(for_a, a.$axis2);
+					assert_eq!(for_b, b.$axis1);
+					assert_eq!(for_b, b.$axis2);
+					assert_eq!(matching, a.$axis);
+					assert_eq!(a.$axis, b.$axis);
+
+					for_a -= 1;
+					for_b += 1;
+					matching -= 1;
+				}
+	    };
+	}
+
+	mod x_axis {
+		use super::Bresenham3dZip;
+
+		/**
+		#[test]
+		fn invalid_x() {
+			let result = Bresenham3dZip::new((0, 0, 0), (1, 1, 1), (2, 2, 2), 0);
+			assert_eq!(result.unwrap_err(), Error::InvalidX(1, 2));
 		}
-	}
+		*/
 
-	#[test]
-	fn asymmetric() {
-		let mut expected_top_y = 50;
-		let mut expected_top_z = 50;
-		let mut expected_bottom_y = 50;
-		let mut expected_bottom_z = 50;
-		let mut expected_x = 50;
-
-		for (top, bottom) in Bresenham3dZip::new((50, 50, 50), (400, 0, 10), (400, 800, 200), 0).unwrap() {
-			assert!(top.1 <= expected_top_y);
-			assert!(top.2 <= expected_top_z);
-			assert!(bottom.1 >= expected_bottom_y);
-			assert!(bottom.2 >= expected_bottom_z);
-			assert_eq!(expected_x, top.0);
-			assert_eq!(top.0, bottom.0);
-
-			expected_top_y = top.1;
-			expected_top_z = top.2;
-			expected_bottom_y = bottom.1;
-			expected_bottom_z = bottom.2;
-			expected_x += 1;
+		#[test]
+		fn symmetric() {
+			symmetric!((50, 50, 50), (100, 0, 0), (100, 100, 100), 0, 1, 2);
 		}
-	}
 
-	#[test]
-	fn inverted() {
-		let mut expected_top_y_z = 50;
-		let mut expected_bottom_y_z = 50;
-		let mut expected_x = 50;
-
-		for (top, bottom) in Bresenham3dZip::new((50, 50, 50), (0, 0, 0), (0, 100, 100), 0).unwrap() {
-			assert_eq!(expected_top_y_z, top.1);
-			assert_eq!(expected_top_y_z, top.2);
-			assert_eq!(expected_bottom_y_z, bottom.1);
-			assert_eq!(expected_bottom_y_z, bottom.2);
-			assert_eq!(expected_x, top.0);
-			assert_eq!(top.0, bottom.0);
-
-			expected_top_y_z -= 1;
-			expected_bottom_y_z += 1;
-			expected_x -= 1;
+		#[test]
+		fn asymmetric() {
+			asymmetric!((50, 50, 50), (400, 0, 10), (400, 800, 200), 0, 1, 2);
 		}
+
+		#[test]
+		fn inverted() {
+			inverted!((50, 50, 50), (0, 0, 0), (0, 100, 100), 0, 1, 2);
+		}
+
 	}
+
+	mod y_axis {
+		use super::Bresenham3dZip;
+
+		#[test]
+		fn symmetric() {
+			symmetric!((50, 50, 50), (0, 100, 0), (100, 100, 100), 1, 0, 2);
+		}
+
+		#[test]
+		fn asymmetric() {
+			asymmetric!((50, 50, 50), (0, 400, 10), (800, 400, 200), 1, 0, 2);
+		}
+
+		#[test]
+		fn inverted() {
+			inverted!((50, 50, 50), (0, 0, 0), (100, 0, 100), 1, 0, 2);
+		}
+
+	}
+
+	mod z_axis {
+		use super::Bresenham3dZip;
+
+		#[test]
+		fn symmetric() {
+			symmetric!((50, 50, 50), (0, 0, 100), (100, 100, 100), 2, 0, 1);
+		}
+
+		#[test]
+		fn asymmetric() {
+			asymmetric!((50, 50, 50), (0, 10, 400), (800, 200, 400), 2, 0, 1);
+		}
+
+		#[test]
+		fn inverted() {
+			inverted!((50, 50, 50), (0, 0, 0), (100, 100, 0), 2, 0, 1);
+		}
+
+	}
+
 }
