@@ -1,7 +1,18 @@
 use std::fmt::{Debug, Formatter};
 use line_drawing::Bresenham3d;
 use crate::error::Error;
-use crate::{nth, Point3, SignedNum};
+use crate::{Point3, SignedNum};
+
+macro_rules! nth {
+    ($x:expr, $axis:tt) => {
+	    match $axis {
+		    0 => $x.0,
+		    1 => $x.1,
+		    2 => $x.2,
+		    _ => unreachable!()
+	    }
+    }
+}
 
 pub struct Bresenham3dZip<T> {
 	a: Bresenham3d<T>,
