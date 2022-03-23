@@ -1,6 +1,10 @@
+//! Package with the logic of the two-dimensional BresenhamZip
+
+mod builder;
+pub use builder::Builder;
+
 use std::fmt::{Debug, Formatter};
 use line_drawing::Bresenham;
-use crate::error::Error;
 use crate::{Point2, SignedNum};
 
 macro_rules! nth {
@@ -25,15 +29,15 @@ pub struct BresenhamZip<T> {
 impl<T: SignedNum> BresenhamZip<T> {
 
 	#[inline]
-	pub fn new(start: Point2<T>, end1: Point2<T>, end2: Point2<T>, axis: u8) -> Result<Self, Error<T>> {
-		Ok(Self {
+	pub(crate) fn new(start: Point2<T>, end1: Point2<T>, end2: Point2<T>, axis: u8) -> BresenhamZip<T> {
+		Self {
 			a: Bresenham::new(start, end1),
 			b: Bresenham::new(start, end2),
 			prev_a: start,
 			prev_b: start,
 			goal: nth!(end1, axis),
 			axis
-		})
+		}
 	}
 
 }
@@ -77,12 +81,10 @@ impl<T: SignedNum> Iterator for BresenhamZip<T> {
 
 impl<T: SignedNum> Debug for BresenhamZip<T> {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(f, "BresenhamZip [
-			({:?}, {:?}),
-			({:?}, {:?})
-		]",
+		write!(f, "BresenhamZip [ ({:?}, {:?}), ({:?}, {:?}) ]. Goal: {:?}",
 		  self.prev_a.0, self.prev_a.1,
 		  self.prev_b.0, self.prev_b.1,
+			self.goal
 		)
 	}
 }
@@ -97,7 +99,7 @@ mod tests {
 				let mut for_b = 50;
 				let mut matching = 50;
 
-				for (a, b) in BresenhamZip::new($a, $b, $c, $axis).unwrap() {
+				for (a, b) in BresenhamZip::new($a, $b, $c, $axis) {
 			    assert_eq!(for_a, a.$axis1);
 			    assert_eq!(for_b, b.$axis1);
 					assert_eq!(matching, a.$axis);
@@ -116,7 +118,7 @@ mod tests {
 				let mut for_b = 50;
 				let mut matching = 50;
 
-				for (a, b) in BresenhamZip::new($a, $b, $c, $axis).unwrap() {
+				for (a, b) in BresenhamZip::new($a, $b, $c, $axis) {
 					assert!(a.$axis1 <= for_a);
 					assert!(b.$axis1 >= for_b);
 					assert_eq!(matching, a.$axis);
@@ -135,7 +137,7 @@ mod tests {
 				let mut for_b = 50;
 				let mut matching = 50;
 
-				for (a, b) in BresenhamZip::new($a, $b, $c, $axis).unwrap() {
+				for (a, b) in BresenhamZip::new($a, $b, $c, $axis) {
 					assert_eq!(for_a, a.$axis1);
 					assert_eq!(for_b, b.$axis1);
 					assert_eq!(matching, a.$axis);
@@ -150,14 +152,6 @@ mod tests {
 
 	mod x_axis {
 		use super::BresenhamZip;
-
-		/**
-		#[test]
-		fn invalid_x() {
-			let result = Bresenham3dZip::new((0, 0, 0), (1, 1, 1), (2, 2, 2), 0);
-			assert_eq!(result.unwrap_err(), Error::InvalidX(1, 2));
-		}
-		*/
 
 		#[test]
 		fn symmetric() {

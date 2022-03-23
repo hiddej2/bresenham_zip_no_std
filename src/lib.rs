@@ -42,6 +42,8 @@
 //! # }
 //! ```
 //!
+extern crate core;
+
 pub mod bresenham2;
 pub mod bresenham3;
 pub mod zip_3d;
@@ -58,3 +60,9 @@ pub type Point2<T> = (T, T);
 
 /// A point in 3D space
 pub type Point3<T> = (T, T, T);
+
+/// An enumeration of the axes that can be used building a new zip
+#[derive(Debug, PartialEq)]
+pub enum Axis {
+	X, Y, Z
+}
