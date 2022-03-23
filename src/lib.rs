@@ -13,10 +13,10 @@
 //! # Example
 //! ```
 //! # use std::error::Error;
-//! # use bresenham_zip::bresenham2::BresenhamZipY;
+//! # use bresenham_zip::zip::Builder;
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! for (left, right) in BresenhamZipY::new((50, 50), (0, 100), (250, 100))? {
-//!   println!("{:?} - {:?}", left, right);
+//! for (left, right) in Builder::new().axis(bresenham_zip::Axis::Y).start_point((50, 50))
+//! 			.first_ending_point((0, 100)).second_ending_point((250, 100)).build()? {
 //!   assert_eq!(left.1, right.1);
 //!   assert!((0..=50).contains(&left.0));
 //!   assert!((50..=250).contains(&right.0));
@@ -26,7 +26,7 @@
 //!
 //! ```
 //!
-//! ```
+//! ```no_build
 //! # use std::error::Error;
 //! # use bresenham_zip::bresenham3::Bresenham3ZipX;
 //! # fn main() -> Result<(), Box<dyn Error>> {
@@ -44,7 +44,6 @@
 //!
 extern crate core;
 
-pub mod bresenham2;
 pub mod bresenham3;
 pub mod zip_3d;
 pub mod zip;

@@ -1,29 +1,20 @@
 //! Contains the logic to build new two-dimensional BresenhamZips
 
-use crate::{Axis, Point2, SignedNum};
+use crate::{Axis, nth, Point2, SignedNum};
 use crate::error::Error;
 use crate::zip::BresenhamZip;
 
 const MAX_ACCEPTED_AXIS: u8 = 1;
-
-macro_rules! nth {
-    ($x:expr, $axis:tt) => {
-	    match $axis {
-		    0 => $x.0,
-		    1 => $x.1,
-		    _ => unreachable!()
-	    }
-    }
-}
 
 /// Builder to construct a new [BresenhamZip]. It is required to specify the starting point and two
 /// ending points, both of them **must share the same value in the axis** of the zip to build.
 /// This axis is also required in the building pipeline.
 ///
 /// ```
-/// # pub fn main() -> Result<(), Err> {
-/// let zip = bresenham_zip::zip::Builder.new()
-///   .axis(bresenham_zip::Axis::Y)?
+/// # use std::error::Error;
+/// # pub fn main() -> Result<(), Box<dyn Error>> {
+/// let zip = bresenham_zip::zip::Builder::new()
+///   .axis(bresenham_zip::Axis::Y)
 ///   .start_point((50, 50))
 ///   .first_ending_point((0, 100))
 ///   .second_ending_point((100, 100))
@@ -53,19 +44,15 @@ impl<T: SignedNum> Builder<T> {
 	/// Specifies the axis that will be used to generate the points of the lines during the iteration.
 	/// The returned tuples will share the same value in the specified axis.
 	///
-	/// # Error
-	/// As this builder constructs two-dimensional `BresenhamZip`, only X and Y axis are supported.
-	/// Passing the Z-axis will result in a [Error::InvalidAxis].
+	/// * `axis` - Axis to use in the Zip iteration
 	///
-	pub fn axis(&mut self, axis: Axis) -> Result<&mut Builder<T>, Error<T>> {
+	pub fn axis(&mut self, axis: Axis) -> &mut Builder<T> {
 		match axis {
 			Axis::X => self.axis = 0,
 			Axis::Y => self.axis = 1,
-			_ => {
-				return Err(Error::InvalidAxis(axis))
-			}
-		}
-		Ok(self)
+			_ => self.axis = MAX_ACCEPTED_AXIS + 1,
+		};
+		self
 	}
 
 	/// Specifies the starting point for both the lines to be drawn in the BresenhamZip
@@ -107,7 +94,7 @@ impl<T: SignedNum> Builder<T> {
 	///
 	pub fn build<'a, 'b>(&'b self) -> Result<BresenhamZip<T>, Error<'a, T>> {
 		if self.axis > MAX_ACCEPTED_AXIS {
-			return Err(Error::MissingAxis);
+			return Err(Error::InvalidOrMissingAxis("X, Y"));
 		}
 		let axis = self.axis;
 
@@ -140,7 +127,7 @@ mod test {
 	macro_rules! build {
 	    (x: $start:tt -> $end_a:tt, $end_b:tt) => {
 		    Builder::new()
-		      .axis(Axis::X).unwrap()
+		      .axis(Axis::X)
 					.start_point($start)
 					.first_ending_point($end_a)
 					.second_ending_point($end_b)
@@ -148,7 +135,7 @@ mod test {
 	    };
 	    (y: $start:tt -> $end_a:tt, $end_b:tt) => {
 		    Builder::new()
-		      .axis(Axis::Y).unwrap()
+		      .axis(Axis::Y)
 					.start_point($start)
 					.first_ending_point($end_a)
 					.second_ending_point($end_b)
@@ -158,18 +145,17 @@ mod test {
 
 	#[test]
 	fn invalid_axis() {
-		assert_eq!(Error::InvalidAxis(Axis::Z), Builder::<i32>::new().axis(Axis::Z).unwrap_err());
-	}
-
-	#[test]
-	fn missing_axis() {
-		assert_eq!(Error::MissingAxis, Builder::<i32>::new().build().unwrap_err());
+		let expected = Error::InvalidOrMissingAxis("X, Y");
+		// Invalid
+		assert_eq!(expected, Builder::<i32>::new().axis(Axis::Z).build().unwrap_err());
+		// Missing
+		assert_eq!(expected, Builder::<i32>::new().build().unwrap_err());
 	}
 
 	#[test]
 	fn missing_point() {
 		let builder = &mut Builder::new();
-		builder.axis(Axis::X).unwrap();
+		builder.axis(Axis::X);
 		// Missing starting point
 		if let Err(err) = builder.build() {
 			assert_eq!(err, Error::MissingPoint("starting point"));
@@ -201,8 +187,8 @@ mod test {
 		           "BresenhamZip [ (50, 50), (50, 50) ]. Goal: 0");
 		// Modified building
 		let built = Builder::new()
-			.axis(Axis::X).unwrap()
-			.axis(Axis::Y).unwrap()
+			.axis(Axis::X)
+			.axis(Axis::Y)
 			.start_point((25, 25))
 			.second_ending_point((50, 50))
 			.start_point((10, 10))

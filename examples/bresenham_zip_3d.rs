@@ -1,3 +1,4 @@
+/**
 use std::error::Error;
 use bresenham_zip::bresenham3::Bresenham3ZipX;
 
@@ -8,3 +9,5 @@ fn main() -> Result<(), Box<dyn Error>> {
 	}
 	Ok(())
 }
+*/
+fn main() {}
