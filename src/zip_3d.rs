@@ -26,7 +26,7 @@ pub struct Bresenham3dZip<T> {
 impl<T: SignedNum> Bresenham3dZip<T> {
 
 	#[inline]
-	pub fn new(start: Point3<T>, end1: Point3<T>, end2: Point3<T>, axis: u8) -> Result<Self, Error<T>> {
+	pub(crate) fn new<'a>(start: Point3<T>, end1: Point3<T>, end2: Point3<T>, axis: u8) -> Result<Self, Error<'a, T>> {
 		Ok(Self {
 			a: Bresenham3d::new(start, end1),
 			b: Bresenham3d::new(start, end2),
