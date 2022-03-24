@@ -48,6 +48,7 @@ pub mod bresenham3;
 pub mod zip_3d;
 pub mod zip;
 mod error;
+mod build_zip;
 
 /// Trait to represent any valid number to use with the **BresenhamZip**.
 /// Extension of [line_drawing::SignedNum] to allow the use of [std::fmt::Debug].
@@ -63,5 +64,7 @@ pub type Point3<T> = (T, T, T);
 /// An enumeration of the axes that can be used building a new zip
 #[derive(Debug, PartialEq)]
 pub enum Axis {
-	X, Y, Z
+	X,
+	Y,
+	Z,
 }

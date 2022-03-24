@@ -120,28 +120,9 @@ impl<T: SignedNum> Builder<T> {
 
 #[cfg(test)]
 mod test {
-	use crate::Axis;
+	use crate::{Axis, build_zip};
 	use crate::error::Error;
 	use crate::zip::Builder;
-
-	macro_rules! build {
-	    (x: $start:tt -> $end_a:tt, $end_b:tt) => {
-		    Builder::new()
-		      .axis(Axis::X)
-					.start_point($start)
-					.first_ending_point($end_a)
-					.second_ending_point($end_b)
-					.build()
-	    };
-	    (y: $start:tt -> $end_a:tt, $end_b:tt) => {
-		    Builder::new()
-		      .axis(Axis::Y)
-					.start_point($start)
-					.first_ending_point($end_a)
-					.second_ending_point($end_b)
-					.build()
-	    };
-	}
 
 	#[test]
 	fn invalid_axis() {
@@ -175,15 +156,15 @@ mod test {
 	#[test]
 	fn invalid_points() {
 		// Invalid X
-		assert_eq!(build!(x: (50,50) -> (100,0), (0, 0)).unwrap_err(), Error::InvalidX(100, 0));
+		assert_eq!(build_zip!(2:x - (50,50) -> (100,0), (0, 0)).unwrap_err(), Error::InvalidX(100, 0));
 		// Invalid Y
-		assert_eq!(build!(y: (50,50) -> (0,0), (0, 100)).unwrap_err(), Error::InvalidY(0, 100));
+		assert_eq!(build_zip!(2:y - (50,50) -> (0,0), (0, 100)).unwrap_err(), Error::InvalidY(0, 100));
 	}
 
 	#[test]
 	fn valid() {
 		// Direct building
-		assert_eq!(format!("{:?}", build!(x: (50, 50) -> (0, 0), (0, 100)).unwrap()),
+		assert_eq!(format!("{:?}", build_zip!(2:x - (50, 50) -> (0, 0), (0, 100)).unwrap()),
 		           "BresenhamZip [ (50, 50), (50, 50) ]. Goal: 0");
 		// Modified building
 		let built = Builder::new()
