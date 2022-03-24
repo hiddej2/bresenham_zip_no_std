@@ -1,6 +1,6 @@
 [package]
 name = "bresenham_zip"
-version = "0.1.1"
+version = "1.0.0"
 edition = "2021"
 authors = [ "Soto Estévez <ricardo@sotoestevez.dev>" ]
 description = "Iterator to perform Bresenham over two lines of the same triangle simultaneusly for triangle rasterization"
