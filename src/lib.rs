@@ -49,6 +49,7 @@ pub mod zip_3d;
 pub mod zip;
 mod error;
 mod build_zip;
+mod util;
 
 /// Trait to represent any valid number to use with the **BresenhamZip**.
 /// Extension of [line_drawing::SignedNum] to allow the use of [std::fmt::Debug].

@@ -1,7 +1,8 @@
 //! Contains the logic to build new two-dimensional BresenhamZips
 
-use crate::{Axis, nth, Point2, SignedNum};
+use crate::{Axis, Point2, SignedNum};
 use crate::error::Error;
+use crate::util::Point;
 use crate::zip::BresenhamZip;
 
 const MAX_ACCEPTED_AXIS: u8 = 1;
@@ -103,7 +104,7 @@ impl<T: SignedNum> Builder<T> {
 			(_, None, _) => Err(Error::MissingPoint("first ending point")),
 			(_, _, None) => Err(Error::MissingPoint("second ending point")),
 			(Some(start), Some(end_a), Some(end_b)) => {
-				if nth!(*end_a, axis) != nth!(*end_b, axis) {
+				if end_a.nth(axis) != end_b.nth(axis) {
 					Err(match axis {
 						0 => Error::InvalidX(end_a.0, end_b.0),
 						1 => Error::InvalidY(end_a.1, end_b.1),

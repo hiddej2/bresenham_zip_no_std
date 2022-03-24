@@ -1,13 +1,13 @@
 //! Package with the logic of the two-dimensional BresenhamZip
 
 mod builder;
-mod macros;
 
 pub use builder::Builder;
 
 use std::fmt::{Debug, Formatter};
 use line_drawing::Bresenham;
-use crate::{nth, Point2, SignedNum};
+use crate::{Point2, SignedNum};
+use crate::util::Point;
 
 pub struct BresenhamZip<T> {
 	a: Bresenham<T>,
@@ -27,7 +27,7 @@ impl<T: SignedNum> BresenhamZip<T> {
 			b: Bresenham::new(start, end2),
 			prev_a: start,
 			prev_b: start,
-			goal: nth!(end1, axis),
+			goal: end1.nth(axis),
 			axis
 		}
 	}
@@ -43,7 +43,7 @@ impl<T: SignedNum> Iterator for BresenhamZip<T> {
 
 		let mut a = None;
 		while let Some(point) = self.a.next() {
-			if (nth!(point, axis) - nth!(self.prev_a, axis)).abs() > T::zero() {
+			if (point.nth(axis) - self.prev_a.nth(axis)).abs() > T::zero() {
 				a = Some(self.prev_a);
 				self.prev_a = point;
 				break;
@@ -53,7 +53,7 @@ impl<T: SignedNum> Iterator for BresenhamZip<T> {
 
 		let mut b = None;
 		while let Some(point) = self.b.next() {
-			if (nth!(point, axis) - nth!(self.prev_b, axis)).abs() > T::zero() {
+			if (point.nth(axis) - self.prev_b.nth(axis)).abs() > T::zero() {
 				b = Some(self.prev_b);
 				self.prev_b = point;
 				break;
@@ -63,7 +63,7 @@ impl<T: SignedNum> Iterator for BresenhamZip<T> {
 
 		if let Some(point) = a {
 			Some((point, b.unwrap()))
-		} else if nth!(self.prev_a, axis) == self.goal {
+		} else if self.prev_a.nth(axis) == self.goal {
 			self.goal -= T::one();
 			Some((self.prev_a, self.prev_b))
 		} else { None }

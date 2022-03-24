@@ -1,18 +1,11 @@
+//pub use builder::Builder3d;
+
+//mod builder;
+
 use std::fmt::{Debug, Formatter};
 use line_drawing::Bresenham3d;
-use crate::error::Error;
 use crate::{Point3, SignedNum};
-
-macro_rules! nth {
-    ($x:expr, $axis:tt) => {
-	    match $axis {
-		    0 => $x.0,
-		    1 => $x.1,
-		    2 => $x.2,
-		    _ => unreachable!()
-	    }
-    }
-}
+use crate::util::Point;
 
 pub struct Bresenham3dZip<T> {
 	a: Bresenham3d<T>,
@@ -26,15 +19,15 @@ pub struct Bresenham3dZip<T> {
 impl<T: SignedNum> Bresenham3dZip<T> {
 
 	#[inline]
-	pub(crate) fn new<'a>(start: Point3<T>, end1: Point3<T>, end2: Point3<T>, axis: u8) -> Result<Self, Error<'a, T>> {
-		Ok(Self {
+	pub(crate) fn new<'a>(start: Point3<T>, end1: Point3<T>, end2: Point3<T>, axis: u8) -> Self {
+		Self {
 			a: Bresenham3d::new(start, end1),
 			b: Bresenham3d::new(start, end2),
 			prev_a: start,
 			prev_b: start,
-			goal: nth!(end1, axis),
+			goal: end1.nth(axis),
 			axis
-		})
+		}
 	}
 
 }
@@ -48,7 +41,7 @@ impl<T: SignedNum> Iterator for Bresenham3dZip<T> {
 
 		let mut a = None;
 		while let Some(point) = self.a.next() {
-			if (nth!(point, axis) - nth!(self.prev_a, axis)).abs() > T::zero() {
+			if (point.nth(axis) - self.prev_a.nth(axis)).abs() > T::zero() {
 				a = Some(self.prev_a);
 				self.prev_a = point;
 				break;
@@ -58,7 +51,7 @@ impl<T: SignedNum> Iterator for Bresenham3dZip<T> {
 
 		let mut b = None;
 		while let Some(point) = self.b.next() {
-			if (nth!(point, axis) - nth!(self.prev_b, axis)).abs() > T::zero() {
+			if (point.nth(axis) - self.prev_b.nth(axis)).abs() > T::zero() {
 				b = Some(self.prev_b);
 				self.prev_b = point;
 				break;
@@ -68,7 +61,7 @@ impl<T: SignedNum> Iterator for Bresenham3dZip<T> {
 
 		if let Some(point) = a {
 			Some((point, b.unwrap()))
-		} else if nth!(self.prev_a, axis) == self.goal {
+		} else if self.prev_a.nth(axis) == self.goal {
 			self.goal -= T::one();
 			Some((self.prev_a, self.prev_b))
 		} else { None }
@@ -97,7 +90,7 @@ mod tests {
 				let mut for_b = 50;
 				let mut matching = 50;
 
-				for (a, b) in Bresenham3dZip::new($a, $b, $c, $axis).unwrap() {
+				for (a, b) in Bresenham3dZip::new($a, $b, $c, $axis) {
 			    assert_eq!(for_a, a.$axis1);
 			    assert_eq!(for_a, a.$axis2);
 			    assert_eq!(for_b, b.$axis1);
@@ -120,7 +113,7 @@ mod tests {
 				let mut for_b_2 = 50;
 				let mut matching = 50;
 
-				for (a, b) in Bresenham3dZip::new($a, $b, $c, $axis).unwrap() {
+				for (a, b) in Bresenham3dZip::new($a, $b, $c, $axis) {
 					assert!(a.$axis1 <= for_a_1);
 					assert!(a.$axis2 <= for_a_2);
 					assert!(b.$axis1 >= for_b_1);
@@ -143,7 +136,7 @@ mod tests {
 				let mut for_b = 50;
 				let mut matching = 50;
 
-				for (a, b) in Bresenham3dZip::new($a, $b, $c, $axis).unwrap() {
+				for (a, b) in Bresenham3dZip::new($a, $b, $c, $axis) {
 					assert_eq!(for_a, a.$axis1);
 					assert_eq!(for_a, a.$axis2);
 					assert_eq!(for_b, b.$axis1);
@@ -161,14 +154,6 @@ mod tests {
 	mod x_axis {
 		use super::Bresenham3dZip;
 
-		/**
-		#[test]
-		fn invalid_x() {
-			let result = Bresenham3dZip::new((0, 0, 0), (1, 1, 1), (2, 2, 2), 0);
-			assert_eq!(result.unwrap_err(), Error::InvalidX(1, 2));
-		}
-		*/
-
 		#[test]
 		fn symmetric() {
 			symmetric!((50, 50, 50), (100, 0, 0), (100, 100, 100), 0, 1, 2);
@@ -183,7 +168,6 @@ mod tests {
 		fn inverted() {
 			inverted!((50, 50, 50), (0, 0, 0), (0, 100, 100), 0, 1, 2);
 		}
-
 	}
 
 	mod y_axis {
@@ -203,7 +187,6 @@ mod tests {
 		fn inverted() {
 			inverted!((50, 50, 50), (0, 0, 0), (100, 0, 100), 1, 0, 2);
 		}
-
 	}
 
 	mod z_axis {
@@ -223,7 +206,6 @@ mod tests {
 		fn inverted() {
 			inverted!((50, 50, 50), (0, 0, 0), (100, 100, 0), 2, 0, 1);
 		}
-
 	}
 
 }
