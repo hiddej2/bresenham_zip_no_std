@@ -1,11 +1,13 @@
-//pub use builder::Builder3d;
+//! Package with the logic of the three-dimensional BresenhamZip
 
-//mod builder;
+mod builder_3d;
 
 use std::fmt::{Debug, Formatter};
 use line_drawing::Bresenham3d;
 use crate::{Point3, SignedNum};
 use crate::util::Point;
+
+pub use builder_3d::Builder3d;
 
 pub struct Bresenham3dZip<T> {
 	a: Bresenham3d<T>,
@@ -70,12 +72,10 @@ impl<T: SignedNum> Iterator for Bresenham3dZip<T> {
 
 impl<T: SignedNum> Debug for Bresenham3dZip<T> {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(f, "Bresenham3dZip [
-			({:?}, {:?}, {:?}),
-			({:?}, {:?}, {:?})
-		]",
+		write!(f, "Bresenham3dZip [ ({:?}, {:?}, {:?}), ({:?}, {:?}, {:?}) ]. Goal: {:?}",
 		  self.prev_a.0, self.prev_a.1, self.prev_a.2,
-		  self.prev_b.0, self.prev_b.1, self.prev_b.2
+		  self.prev_b.0, self.prev_b.1, self.prev_b.2,
+			self.goal
 		)
 	}
 }

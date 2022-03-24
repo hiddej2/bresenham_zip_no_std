@@ -157,15 +157,15 @@ mod test {
 	#[test]
 	fn invalid_points() {
 		// Invalid X
-		assert_eq!(build_zip!(2:x - (50,50) -> (100,0), (0, 0)).unwrap_err(), Error::InvalidX(100, 0));
+		assert_eq!(build_zip!(2D:X - (50,50) -> (100,0), (0, 0)).unwrap_err(), Error::InvalidX(100, 0));
 		// Invalid Y
-		assert_eq!(build_zip!(2:y - (50,50) -> (0,0), (0, 100)).unwrap_err(), Error::InvalidY(0, 100));
+		assert_eq!(build_zip!(2D:Y - (50,50) -> (0,0), (0, 100)).unwrap_err(), Error::InvalidY(0, 100));
 	}
 
 	#[test]
 	fn valid() {
 		// Direct building
-		assert_eq!(format!("{:?}", build_zip!(2:x - (50, 50) -> (0, 0), (0, 100)).unwrap()),
+		assert_eq!(format!("{:?}", build_zip!(2D:X - (50, 50) -> (0, 0), (0, 100)).unwrap()),
 		           "BresenhamZip [ (50, 50), (50, 50) ]. Goal: 0");
 		// Modified building
 		let built = Builder::new()

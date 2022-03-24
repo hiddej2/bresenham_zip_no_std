@@ -10,29 +10,53 @@
 /// ```
 /// # use std::error::Error;
 /// # fn main() -> Result<(), Box<dyn Error>> { ///
-/// // 2D Zip to iterate in X///
-/// let x2 = bresenham_zip::build_zip!(2:x - (50, 50) -> (100, 0), (100, 100))?;
+/// // 2D Zip to iterate through X
+/// let zip_2d_x = bresenham_zip::build_zip!(2D:X - (50, 50) -> (100, 0), (100, 100))?;
+/// // 3D Zip to iterate through Z
+/// let zip_3d_z = bresenham_zip::build_zip!(3D:Z - (50, 50, 50) -> (0, 0, 100), (25, 50, 100))?;
 /// # Ok(())
 /// # }
 /// ```
 #[macro_export]
 macro_rules! build_zip {
-    (2:x - $start:tt -> $end_a:tt, $end_b:tt) => {
-	    $crate::build_2d_zip!(($crate::Axis::X) - $start -> $end_a, $end_b)
-    };
-    (2:y - $start:tt -> $end_a:tt, $end_b:tt) => {
-	    $crate::build_2d_zip!(($crate::Axis::Y) - $start -> $end_a, $end_b)
-    };
-}
-
-#[macro_export]
-macro_rules! build_2d_zip {
-    ($axis:tt - $start:tt -> $end_a:tt, $end_b:tt) => {
-		    $crate::zip::Builder::new()
-		      .axis($axis)
+    (2D:X - $start:tt -> $end_a:tt, $end_b:tt) => {
+	    $crate::zip::Builder::new()
+		      .axis($crate::Axis::X)
 					.start_point($start)
 					.first_ending_point($end_a)
 					.second_ending_point($end_b)
 					.build()
-	    };
+    };
+    (2D:Y - $start:tt -> $end_a:tt, $end_b:tt) => {
+	    $crate::zip::Builder::new()
+		      .axis($crate::Axis::Y)
+					.start_point($start)
+					.first_ending_point($end_a)
+					.second_ending_point($end_b)
+					.build()
+    };
+    (3D:X - $start:tt -> $end_a:tt, $end_b:tt) => {
+	    $crate::zip_3d::Builder3d::new()
+		      .axis($crate::Axis::X)
+					.start_point($start)
+					.first_ending_point($end_a)
+					.second_ending_point($end_b)
+					.build()
+    };
+    (3D:Y - $start:tt -> $end_a:tt, $end_b:tt) => {
+	    $crate::zip_3d::Builder3d::new()
+		      .axis($crate::Axis::Y)
+					.start_point($start)
+					.first_ending_point($end_a)
+					.second_ending_point($end_b)
+					.build()
+    };
+    (3D:Z - $start:tt -> $end_a:tt, $end_b:tt) => {
+	    $crate::zip_3d::Builder3d::new()
+		      .axis($crate::Axis::Z)
+					.start_point($start)
+					.first_ending_point($end_a)
+					.second_ending_point($end_b)
+					.build()
+    };
 }

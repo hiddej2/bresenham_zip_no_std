@@ -27,7 +27,7 @@ impl<T: SignedNum> Error<'_, T> {
 			InvalidOrMissingAxis(axis) => format!("Invalid axis. This BresenhamZip only accepts: {axis:?}"),
 			InvalidX(left, right) => format!("Invalid X. Both values must have the same X ({left:?} != {right:?})"),
 			InvalidY(left, right) => format!("Invalid Y. Both values must have the same Y ({left:?} != {right:?})"),
-			InvalidZ(left, right) => format!("Invalid Z. Both values must have the same Y ({left:?} != {right:?})"),
+			InvalidZ(left, right) => format!("Invalid Z. Both values must have the same Z ({left:?} != {right:?})"),
 			MissingPoint(point) => format!("Missing point. You must specify the {point:?}"),
 		}
 	}

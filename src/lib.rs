@@ -11,6 +11,8 @@
 //! have the same X or Y, defining an axis parallel line.
 //!
 //! # Example
+//!
+//! You can create the any of the two zips with builders and iterate through them to get the pairs.
 //! ```
 //! # use std::error::Error;
 //! # use bresenham_zip::zip::Builder;
@@ -26,25 +28,43 @@
 //!
 //! ```
 //!
-//! ```no_build
+//! Or you can build them with the helper macro.
+//! ```
 //! # use std::error::Error;
-//! # use bresenham_zip::bresenham3::Bresenham3ZipX;
+//! # use bresenham_zip::build_zip;
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! for (top, bottom) in Bresenham3ZipX::new((50, 50, 50), (100, 0, 10), (100, 250, 200))? {
-//!   println!("{:?} - {:?}", top, bottom);
-//!   assert_eq!(top.0, bottom.0);
-//!   assert!((0..=50).contains(&top.1));
-//!   assert!((10..=50).contains(&top.2));
-//!   assert!((50..=250).contains(&bottom.1));
-//!   assert!((50..=200).contains(&bottom.2));
+//! for (a, b) in build_zip!(3D:Z - (50, 50, 50) -> (0, 10, 200), (100, 250, 200))? {
+//!   println!("{:?} - {:?}", a, b);
+//!   assert_eq!(a.2, b.2);
+//!   assert!((0..=50).contains(&a.0));
+//!   assert!((10..=50).contains(&a.1));
+//!   assert!((50..=100).contains(&b.0));
+//!   assert!((50..=250).contains(&b.1));
 //! }
 //! #   Ok(())
 //! # }
 //! ```
 //!
+//! ## build_zip! macro
+//! This macro allows you to build a whole zip to iterate with a single line. You need to specify
+//! the dimension of the space, the axis to navigate and three points following the next schema:
+//!
+//! {2D|3D}:{X|Y|Z} - {starting_point} -> {first_ending_point}, {second_ending_point}
+//! _Ignore { and } when writting it_
+//!
+//! ```
+//! # use std::error::Error;
+//! # use bresenham_zip::build_zip;
+//! # fn main() -> Result<(), Box<dyn Error>> {
+//! let zip_2d_y = build_zip!(2D:Y - (50, 50) -> (0, 100), (0, 100))?;
+//! let zip_3d_z = build_zip!(3D:Z - (50, 50, 50) -> (0, 0, 200), (100, 250, 200))?;
+//! #   Ok(())
+//! # }
+//! ```
+//!
+//!
 extern crate core;
 
-pub mod bresenham3;
 pub mod zip_3d;
 pub mod zip;
 mod error;

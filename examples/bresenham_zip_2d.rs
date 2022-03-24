@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 	}
 
 	println!("\nPairs along the X axis in 2D space: ");
-	for (top, bottom) in build_zip!(2:y - (50, 50) -> (0, 100), (100, 100))? {
+	for (top, bottom) in build_zip!(2D:Y - (50, 50) -> (0, 100), (100, 100))? {
 		println!("{:?}, {:?}", top, bottom);
 	}
 

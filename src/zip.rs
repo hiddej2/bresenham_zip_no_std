@@ -2,12 +2,12 @@
 
 mod builder;
 
-pub use builder::Builder;
-
 use std::fmt::{Debug, Formatter};
 use line_drawing::Bresenham;
 use crate::{Point2, SignedNum};
 use crate::util::Point;
+
+pub use builder::Builder;
 
 pub struct BresenhamZip<T> {
 	a: Bresenham<T>,
