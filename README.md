@@ -5,8 +5,7 @@
 
 DISCLAIMER: this is a quick and dirty removal of all ```std``` dependencies, so you might find commented out code and crashes where previously, it would've given a nice error.
 
-Also added a no_std fork of the ```line_drawing``` dependency as a submodule. To get this submodule, use ```git submodule update --init```.
-
+Also added a no_std fork of the ```line_drawing``` in ```Cargo.toml```.
 
 
 

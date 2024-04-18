@@ -24,6 +24,7 @@ checksum = "4ec2a862134d2a7d32d7983ddcdd1c4923530833c9f2ea1a44fc5fa473989058"
 [[package]]
 name = "line_drawing"
 version = "1.0.0"
+source = "git+https://github.com/andyblarblar/line_drawing.git#94aa83094be7027ec1511b4520d2f8d05ae49bb6"
 dependencies = [
  "num-traits",
 ]

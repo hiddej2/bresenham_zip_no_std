@@ -19,7 +19,7 @@ include = [
 ]
 
 [dependencies]
-line_drawing = { path = "line_drawing/" }
+line_drawing = { git = "https://github.com/andyblarblar/line_drawing.git" }
 
 [unstable]
 build-std = ["core"]
