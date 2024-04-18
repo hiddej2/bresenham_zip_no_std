@@ -63,6 +63,8 @@
 //! ```
 //!
 //!
+#![feature(error_in_core)]
+#![no_std]
 extern crate core;
 
 pub mod zip_3d;
@@ -73,8 +75,8 @@ mod util;
 
 /// Trait to represent any valid number to use with the **BresenhamZip**.
 /// Extension of [line_drawing::SignedNum] to allow the use of [std::fmt::Debug].
-pub trait SignedNum: line_drawing::SignedNum + std::fmt::Debug {}
-impl<T: line_drawing::SignedNum + std::fmt::Debug> SignedNum for T {}
+pub trait SignedNum: line_drawing::SignedNum + core::fmt::Debug {}
+impl<T: line_drawing::SignedNum + core::fmt::Debug> SignedNum for T {}
 
 /// A point in 2D space
 pub type Point2<T> = (T, T);

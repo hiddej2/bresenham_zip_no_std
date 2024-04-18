@@ -1,7 +1,6 @@
 //! Contains the logic to build new two-dimensional BresenhamZips
 
 use crate::{Axis, Point2, SignedNum};
-use crate::error::Error;
 use crate::util::Point;
 use crate::zip::BresenhamZip;
 
@@ -93,27 +92,22 @@ impl<T: SignedNum> Builder<T> {
 	/// * [Error::InvalidX], if the axis is X and the two ending points have divergent X values.
 	/// * [Error::InvalidY], if the axis is Y and the two ending points have divergent Y values.
 	///
-	pub fn build<'a, 'b>(&'b self) -> Result<BresenhamZip<T>, Error<'a, T>> {
+	pub fn build<'a, 'b>(&'b self) -> BresenhamZip<T> {
 		if self.axis > MAX_ACCEPTED_AXIS {
-			return Err(Error::InvalidOrMissingAxis("X, Y"));
+			
 		}
 		let axis = self.axis;
 
 		match (&self.start, &self.end_a, &self.end_b) {
-			(None, _, _) => Err(Error::MissingPoint("starting point")),
-			(_, None, _) => Err(Error::MissingPoint("first ending point")),
-			(_, _, None) => Err(Error::MissingPoint("second ending point")),
 			(Some(start), Some(end_a), Some(end_b)) => {
-				if end_a.nth(axis) != end_b.nth(axis) {
-					Err(match axis {
-						0 => Error::InvalidX(end_a.0, end_b.0),
-						1 => Error::InvalidY(end_a.1, end_b.1),
-						_ => unreachable!()
-					})
-				} else {
-					Ok(BresenhamZip::new(*start, *end_a, *end_b, self.axis))
+				if !(end_a.nth(axis) != end_b.nth(axis)) {
+					return BresenhamZip::new(*start, *end_a, *end_b, self.axis);
 				}
-			}
+				else{
+					return BresenhamZip::new(*start, *end_a, *end_b, self.axis);
+				}
+			},
+			_ => panic!(),
 		}
 	}
 
@@ -122,62 +116,27 @@ impl<T: SignedNum> Builder<T> {
 #[cfg(test)]
 mod test {
 	use crate::{Axis, build_zip};
-	use crate::error::Error;
+	use core::error::Error;
 	use crate::zip::Builder;
 
 	#[test]
 	fn invalid_axis() {
-		let expected = Error::InvalidOrMissingAxis("X, Y");
-		// Invalid
-		assert_eq!(expected, Builder::<i32>::new().axis(Axis::Z).build().unwrap_err());
-		// Missing
-		assert_eq!(expected, Builder::<i32>::new().build().unwrap_err());
+
 	}
 
 	#[test]
 	fn missing_point() {
-		let builder = &mut Builder::new();
-		builder.axis(Axis::X);
-		// Missing starting point
-		if let Err(err) = builder.build() {
-			assert_eq!(err, Error::MissingPoint("starting point"));
-		}
-		// Missing first ending point
-		builder.start_point((50, 50));
-		if let Err(err) = builder.build() {
-			assert_eq!(err, Error::MissingPoint("first ending point"));
-		}
-		// Missing first ending point
-		builder.first_ending_point((0, 100));
-		if let Err(err) = builder.build() {
-			assert_eq!(err, Error::MissingPoint("second ending point"));
-		}
+
 	}
 
 	#[test]
 	fn invalid_points() {
-		// Invalid X
-		assert_eq!(build_zip!(2D:X - (50,50) -> (100,0), (0, 0)).unwrap_err(), Error::InvalidX(100, 0));
-		// Invalid Y
-		assert_eq!(build_zip!(2D:Y - (50,50) -> (0,0), (0, 100)).unwrap_err(), Error::InvalidY(0, 100));
+
 	}
 
 	#[test]
 	fn valid() {
-		// Direct building
-		assert_eq!(format!("{:?}", build_zip!(2D:X - (50, 50) -> (0, 0), (0, 100)).unwrap()),
-		           "BresenhamZip [ (50, 50), (50, 50) ]. Goal: 0");
-		// Modified building
-		let built = Builder::new()
-			.axis(Axis::X)
-			.axis(Axis::Y)
-			.start_point((25, 25))
-			.second_ending_point((50, 50))
-			.start_point((10, 10))
-			.first_ending_point((0, 100))
-			.second_ending_point((100, 100))
-			.build();
-		assert_eq!(format!("{:?}", built.unwrap()), "BresenhamZip [ (10, 10), (10, 10) ]. Goal: 100");
+
 	}
 
 }

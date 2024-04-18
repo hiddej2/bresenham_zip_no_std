@@ -19,4 +19,8 @@ include = [
 ]
 
 [dependencies]
-line_drawing = "1.0.0"
+line_drawing = { path = "line_drawing/" }
+
+[unstable]
+build-std = ["core"]
+#![feature(error_in_core)]

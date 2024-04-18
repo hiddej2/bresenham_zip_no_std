@@ -1,7 +1,15 @@
 [![Crates.io](https://img.shields.io/crates/v/bresenham_zip)](https://crates.io/crates/bresenham_zip)
 [![docs.rs](https://img.shields.io/docsrs/bresenham_zip)](https://doc.rs/bresenham_zip)
 
-# Bresenham::zip
+# Bresenham::zip with no_std support
+
+DISCLAIMER: this is a quick and dirty removal of all ```std``` dependencies, so you might find commented out code and crashes where previously, it would've given a nice error.
+
+Also added a no_std fork of the ```line_drawing``` dependency as a submodule. To get this submodule, use ```git submodule update --init```.
+
+
+
+
 
 This library provides a wrapper to handle the simultaneous generation of two lines using [**Bresenham line algorithm**](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm).
 This is something basic to implement [triangle rasterization](http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html)
